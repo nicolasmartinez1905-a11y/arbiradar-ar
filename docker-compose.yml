@@ -1,0 +1,7 @@
+services:
+  pruebas:
+    build: .
+    environment:
+      TZ: ${TZ:-America/Argentina/Buenos_Aires}
+    network_mode: none
+    read_only: true
