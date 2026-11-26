@@ -25,6 +25,14 @@ La evaluación requiere evidencia de operación permitida, medios de pago, titul
 
 - Profundidad del libro, comisiones por tramo, costos en activos externos, impuestos por situación fiscal y variación durante la acreditación. La proyección actual aplica tasas, liquidez y costos únicos por paso.
 - Evaluación integral de la frescura durante la ejecución, verificación de compatibilidad real de redes y restricciones por cuenta.
-- Descubrimiento de rutas, datos en vivo, API, interfaz, historial, paper trading avanzado y alertas.
-- Python 3.12 con biblioteca estándar para el núcleo. FastAPI, HTTPX, Pydantic y SQLAlchemy se incorporarán con sus respectivos componentes. SQLite queda previsto para desarrollo y PostgreSQL para persistencia, con Supabase como opción futura.
+- Descubrimiento de rutas, API de la aplicación, interfaz, historial, paper trading avanzado y alertas.
+- Python 3.12 con biblioteca estándar para el núcleo. La fase 2 usa HTTPX y WebSockets. FastAPI, Pydantic y SQLAlchemy se incorporarán con sus respectivos componentes. SQLite queda previsto para desarrollo y PostgreSQL para persistencia, con Supabase como opción futura.
 - El contenedor inicial ejecuta pruebas locales. El despliegue público requiere autenticación y autorización.
+
+## Entrega de la fase 2
+
+El proceso independiente consulta CriptoYa, DolarApi y ComparaDólar en paralelo e incorpora el canal público de Kraken. Conserva en memoria la última cotización por fuente, mercado y par. Calcula la vigencia al emitir cada instantánea y conserva los datos anteriores como desconectados durante interrupciones. Una sesión nueva de Kraken reconstruye su caché con los primeros datos recibidos.
+
+El presupuesto de consultas se aplica por proveedor. CriptoYa procesa ocho pares de manera secuencial, con al menos un segundo entre peticiones y un minuto de pausa al completar el lote. Los fallos hacen visible la desconexión y activan una espera exponencial que respeta `Retry-After`. Después de tres fallos se abre el circuito y se deja pasar un intento de recuperación tras la pausa. La latencia HTTP mide el tiempo total de las solicitudes por lote. En Kraken se informa el mayor retraso entre publicación y recepción del último mensaje válido, sujeto a la sincronización de relojes.
+
+El formato separa precio unitario, precio con costos publicado por la fuente, cantidad en punta de libro, volumen solicitado y hora de origen. Los importes salen como cadenas decimales. Cada precio se mantiene como referencia para el análisis. La fase 3 incorporará las reglas que convierten evidencia suficiente en pasos de circuitos. El [inventario de fuentes](FUENTES.md) registra la cobertura y restricciones.

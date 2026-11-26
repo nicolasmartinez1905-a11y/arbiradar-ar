@@ -5,3 +5,11 @@ services:
       TZ: ${TZ:-America/Argentina/Buenos_Aires}
     network_mode: none
     read_only: true
+  monitor:
+    profiles: ["monitoreo"]
+    build: .
+    command: ["python", "-m", "backend.services.monitor"]
+    environment:
+      TZ: ${TZ:-America/Argentina/Buenos_Aires}
+    restart: unless-stopped
+    read_only: true
